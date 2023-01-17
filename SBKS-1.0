@@ -141,6 +141,11 @@ ln -s System.map-$VERSION2 System.map
 
 # make initrd
 /usr/share/mkinitrd/mkinitrd_command_generator.sh -k $VERSION2 > mymkinitrd.sh
+filename="mymkinitrd.sh"
+Clear="mkinitrd -c"
+NOClear="mkinitrd"
+
+sed -i "s/$Clear/$NOClear/" $filename
 sh mymkinitrd.sh
 
 # update-bootloader
