@@ -32,20 +32,15 @@ set -x
 KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x
 KERNEL_VERSION=6.0.14
 VERSION2=6.0.14
+# If your oldconfig was builded by u an your kernel`s name is taged by you asume: "6.0.13-tag" 
+# then add your TAG in VERSION2. Example VERSION2=6.0.14-TAG else script will fail.
+
 set +x
-# Normal wont need edit next lines exept if you want to use "make menuconfig" 
-KERNEL_TAR=linux-$KERNEL_VERSION.tar.xz
-KERNEL_SIGN=linux-$KERNEL_VERSION.tar.sign
+# Normal wont need edit next lines exept if you want to use "make menuconfig or other make_config" 
 PRGNAM=linux
 GPG=gpg2
 WGET=wget
-JOBS=${JOBS:-" -j$(expr $(getconf _NPROCESSORS_ONLN) \* 2 ) "}
-
-# just in case...
-if [ "$EUID" -ne 0 ];then
-    echo "Please run this script as root"
-    exit 1
-fi
+JOBS=-j$(nproc)
 
 # Check if BOTH kernel version AND signature file exist
 $WGET -c --spider $KERNEL_URL/linux-$KERNEL_VERSION.tar.{sign,xz}
@@ -108,6 +103,11 @@ esac
 done
 
 echo doing stuff...
+# just in case...
+if [ "$EUID" -ne 0 ];then
+    echo "Please run this script as root"
+    exit 1
+fi
 
 # create a direcory, put kernel tarbal there for the rest of the work
 mkdir -p kernel-$KERNEL_VERSION
@@ -128,10 +128,11 @@ make oldconfig
 # make menuconfig
 echo 'Lets Burn Out CPU!!!!! AND BUILD THE UNIVERSE'
 sleep 3
-make $JOBS
+make "$JOBS"
 make modules_install
 echo "finish build and install"
 sleep 2
+
 # Put this here after modules installed but before we touch System.map and vmlizuz
 # so if something went wrong with modules mkinitrd wont find them, SBKS will stop before your system break.
 # If everything is ok SBKS will continue and at the right time will execute mkinitrd
@@ -149,7 +150,7 @@ cd /boot
 rm System.map
 ln -s System.map-$VERSION2 System.map
 
-# now its the time, make initrd
+# now its the time, make a generic initrd
 sh mymkinitrd.sh
 
 # update-bootloader
@@ -175,5 +176,6 @@ else
   echo "ELILO or Grub not found!"
   echo "Assuming rEFInd, or something else, then do it manually, update your bootloader before rebooting!"
 fi
-
+echo -e echo -e "\e[1;36m ## Finaly you have  successfully break your system ## \e[0m"
+sleep 3
 exit 0
