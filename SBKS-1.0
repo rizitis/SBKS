@@ -32,7 +32,7 @@ set -x
 KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x
 KERNEL_VERSION=6.0.14
 VERSION2=6.0.14
-
+set +x
 # Normal wont need edit next lines exept if you want to use "make menuconfig" 
 KERNEL_TAR=linux-$KERNEL_VERSION.tar.xz
 KERNEL_SIGN=linux-$KERNEL_VERSION.tar.sign
@@ -60,16 +60,17 @@ fi
 unxz linux-$KERNEL_VERSION.tar.xz
 $GPG --verify linux-$KERNEL_VERSION.tar.sign
 xz -cd $KERNEL_VERSION.tar.xz | gpg2 --verify linux-$KERNEL_VERSION.tar.sign -
-echo "---------------CHECK IF KEYS ARE THE SAME. IF YES hit 'y' ---"
-echo "################ IF ARE NOT THE SAME hit 'n' ###############"
+
+echo -e "\e[1;36m PLEASE CHECK IF KEYS ARE THE SAME \e[0m"
+
 while true; do
 
 read -p "Do you want to proceed? (y/n) " yn
 
 case $yn in 
-	[yY] ) echo ok, we will proceed;
+	[yY] ) echo -e "\e[1;36m ok, we will proceed; \e[0m"
 		break;;
-	[nN] ) echo exiting...;
+	[nN] ) echo -e "\e[1;36m exiting...;\e[0m"
 		exit;;
 	* ) echo invalid response;;
 esac
@@ -131,6 +132,15 @@ make $JOBS
 make modules_install
 echo "finish build and install"
 sleep 2
+# Put this here after modules installed but before we touch System.map and vmlizuz
+# so if something went wrong with modules mkinitrd wont find them, SBKS will stop before your system break.
+# If everything is ok SBKS will continue and at the right time will execute mkinitrd
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k $VERSION2 > /boot/mymkinitrd.sh
+filename="mymkinitrd.sh"
+Clear="mkinitrd -c"
+NOClear="mkinitrd"
+sed -i "s/$Clear/$NOClear/" /boot/$filename
+
 # fix vnlinuz and System.map. Some things are optional but just in case...not hurt.
 cp arch/x86_64/boot/bzImage /boot/vmlinuz-$VERSION2
 cp System.map /boot/System.map-$VERSION2
@@ -139,13 +149,7 @@ cd /boot
 rm System.map
 ln -s System.map-$VERSION2 System.map
 
-# make initrd
-/usr/share/mkinitrd/mkinitrd_command_generator.sh -k $VERSION2 > mymkinitrd.sh
-filename="mymkinitrd.sh"
-Clear="mkinitrd -c"
-NOClear="mkinitrd"
-
-sed -i "s/$Clear/$NOClear/" $filename
+# now its the time, make initrd
 sh mymkinitrd.sh
 
 # update-bootloader
@@ -160,7 +164,7 @@ else
   echo 'Assuming rEFInd, or something else? Dont forget to run manually update your bootloader before rebooting!'
 fi
 sleep 3
-#just in case... run second time update bootloader
+# just in case...second time update bootloader
 if [ -f /boot/efi/EFI/Slackware/elilo.conf ] ; then
   echo -e "\e[1;36m ### ELILO Found, using that...\e[0m"
   eliloconfig
@@ -169,7 +173,7 @@ elif [ -f /boot/grub/grub.cfg ] ; then
   grub-mkconfig -o /boot/grub/grub.cfg
 else
   echo "ELILO or Grub not found!"
-  echo "Assuming rEFInd, or something else, then run manually update your bootloader before rebooting!"
+  echo "Assuming rEFInd, or something else, then do it manually, update your bootloader before rebooting!"
 fi
 
 exit 0
