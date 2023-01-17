@@ -29,7 +29,7 @@ fi
 set -x
 # next 3 lines need edit every time you update/rebuild a new linux kernel
 # kernel.org branch url and target files
-KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x
+KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x  # dont change if we are still in 6.x.x kernel
 KERNEL_VERSION=6.0.14
 VERSION2=6.0.14
 # If your oldconfig was builded by u and your old kernel`s name is taged by you asume: "6.0.13-tag" 
