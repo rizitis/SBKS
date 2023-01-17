@@ -32,8 +32,8 @@ set -x
 KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x
 KERNEL_VERSION=6.0.14
 VERSION2=6.0.14
-# If your oldconfig was builded by u an your kernel`s name is taged by you asume: "6.0.13-tag" 
-# then add your TAG in VERSION2. Example VERSION2=6.0.14-TAG else script will fail.
+# If your oldconfig was builded by u and your old kernel`s name is taged by you asume: "6.0.13-tag" 
+# then add your TAG in VERSION2. Example VERSION2=6.0.14-TAG else script will fail using oldconfig.
 
 set +x
 # Normal wont need edit next lines exept if you want to use "make menuconfig or other make_config" 
