@@ -136,7 +136,7 @@ sleep 2
 # Put this here after modules installed but before we touch System.map and vmlizuz
 # so if something went wrong with modules mkinitrd wont find them, SBKS will stop before your system break.
 # If everything is ok SBKS will continue and at the right time will execute mkinitrd
-/usr/share/mkinitrd/mkinitrd_command_generator.sh -k $VERSION2 > /boot/mymkinitrd.sh
+sh /usr/share/mkinitrd/mkinitrd_command_generator.sh -k $VERSION2 > /boot/mymkinitrd.sh
 filename="mymkinitrd.sh"
 Clear="mkinitrd -c"
 NOClear="mkinitrd"
