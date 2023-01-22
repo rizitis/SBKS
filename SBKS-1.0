@@ -21,13 +21,14 @@
 #  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-if [ $EUID != 0 ]; then
-    sudo "$0" "$@"
-    exit $?
+if [ "$EUID" -ne 0 ];then
+    echo "Please run this script as root"
+    exit 1
 fi
 
+
 set -x
-# next 3 lines need edit every time you update/rebuild a new linux kernel
+# next 3 lines need edit every time you update/rebuild a new linux kernel for (back-up) in slackware
 # kernel.org branch url and target files
 KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x  # dont change if we are still in 6.x.x kernel
 KERNEL_VERSION=6.0.14
@@ -103,11 +104,6 @@ esac
 done
 
 echo doing stuff...
-# just in case...
-if [ "$EUID" -ne 0 ];then
-    echo "Please run this script as root"
-    exit 1
-fi
 
 # create a direcory, put kernel tarbal there for the rest of the work
 mkdir -p kernel-$KERNEL_VERSION
@@ -136,7 +132,7 @@ sleep 2
 # Put this here after modules installed but before we touch System.map and vmlizuz
 # so if something went wrong with modules mkinitrd wont find them, SBKS will stop before your system break.
 # If everything is ok SBKS will continue and at the right time will execute mkinitrd
-sh /usr/share/mkinitrd/mkinitrd_command_generator.sh -k $VERSION2 > /boot/mymkinitrd.sh
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k $VERSION2 > /boot/mymkinitrd.sh
 filename="mymkinitrd.sh"
 Clear="mkinitrd -c"
 NOClear="mkinitrd"
