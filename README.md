@@ -24,7 +24,9 @@ SBKS
 
 Everything else you will find it in the script at zenity dialogs.
 A 10 minutes video is here how to install and run SBKS
+(https://www.youtube.com/watch?v=PfLugpULA-8)
 
+{% include youtube.html id="PfLugpULA-8" %} 
 
 ### Info
 SBKS wont remove or upgrade older Linux kernel versions that allready exist in your system.
