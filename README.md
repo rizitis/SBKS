@@ -3,7 +3,7 @@
 It use zenity dialogs, so zenity required (install it from SBo)
 
 SBKS is a bash script for auto download, build, and install a second (backup) Linux kernel for Slackware and Slack based systems.
-Slackware Based Distros should execute this script as root ONLY, NOT sudo ./SBKS else  mkinird probably will fail and SBKS will stop.
+Slackware Based Distros should execute this script as root ONLY, NOT sudo ./SBKS else  mkinitrd probably will fail and SBKS will stop.
 
 ### Install 
 First install zenity from SlackBuild.org 
