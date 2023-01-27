@@ -62,6 +62,7 @@ GPG=gpg2
 WGET=wget
 JOBS=-j$(nproc)
 
+cd /usr/src/
 # Check if BOTH kernel version AND signature file exist
 $WGET -c --spider $KERNEL_URL/linux-"$KERNEL_VERSION".tar.{sign,xz}
 if [ $? ]
