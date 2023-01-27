@@ -1,4 +1,5 @@
-SBKS (Slack-Build-Kernel-Script) 
+# SBKS  
+### (Slack-Build-Kernel-Script) 
 It use zenity dialogs, so zenity required (install it from SBo)
 
 SBKS is a bash script for auto download, build, and install a second (backup) Linux kernel for Slackware and Slack based systems.
