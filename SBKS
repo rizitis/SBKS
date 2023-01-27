@@ -1,0 +1,171 @@
+#!/bin/bash
+
+# Slackware bash script named SBKS-1.0 (Slack-Build-Kernel-Script)
+# For Slackware64 and Slackware based distros.
+# Anagnostakis Ioannis Greece 2022-2023 rizitis@gmail.com
+# REQUIRES="zenity"
+#
+# Redistribution and use of this script, with or without modification, is
+# permitted provided that the following conditions are met:
+#
+# 1. Redistributions of this script must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+#  THIS SOFTWARE IS PROVIDED BY THE AUTHOR "AS IS" AND ANY EXPRESS OR IMPLIED
+#  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF
+#  MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.  IN NO
+#  EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+#  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+#  PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
+#  OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
+#  WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
+#  OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
+#  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+if [ "$EUID" -ne 0 ];then
+    zenity --error \
+       --title "Error Message" \
+       --width 500 \
+       --height 100 \
+       --text "Permission denied. Please run SBKS as root user"
+    exit 1
+fi
+
+
+# ADD Linux Kernel version you want to build here
+KERNEL_VERSION=$(zenity --entry \
+       --width 500 \
+       --title "Welcome to SBKS" \
+       --text "Enter here kernel version you want to build.Example: 6.1.8"); echo "$KERNEL_VERSION"
+       
+# If your oldconfig was builded by u and your old kernel`s name is taged by you asume: "6.0.13-tag" 
+# then add your TAG in VERSION2. Example VERSION2=6.0.14-TAG else script will fail using oldconfig.       
+VERSION2=$(zenity --entry \
+       --width 500 \
+       --height 200 \
+       --title "One more time please" \
+       --text "Enter kernel version again. If your current kernel version is 6.x.x-TAG then add it here. Example: 6.1.8-rtz"); echo "$VERSION2"
+
+# script ask for current bootloader. 
+BOOTLOADER=$(zenity --entry \
+       --width 500 \
+       --title "Bootloader in current system" \
+       --text "Enter THE NUMBER of your bootloader.Example: Elilo=5 Lilo=0 Grub=7 myown=100"); echo "$BOOTLOADER"
+       
+set -e
+zenity --question --title="SBKS Question?" --text="Check your inputs in terminal.Should we Proceed?" --no-wrap --ok-label "Yes" --cancel-label "No"
+set +e
+
+# Normal wont need edit next lines exept if you want to use "make menuconfig or other make_config" 
+KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x  # dont change if we are still in 6.x.x kernel (NAME = Hurr durr I'ma ninja sloth)
+PRGNAM=linux
+GPG=gpg2
+WGET=wget
+JOBS=-j$(nproc)
+
+# Check if BOTH kernel version AND signature file exist
+$WGET -c --spider $KERNEL_URL/linux-"$KERNEL_VERSION".tar.{sign,xz}
+if [ $? ]
+then
+ ($WGET -c $KERNEL_URL/linux-"$KERNEL_VERSION".tar.{xz,sign})| sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --progress --title="Downloading Files..." --percentage=1 --pulsate --time-remaining --auto-kill --auto-close \
+ --width 800 \
+ --height 50
+fi
+
+
+# Using GnuPG to verify kernel signatures
+# Not working with all kernels every time,sorry , thats why set -e starting after this step.
+unxz linux-"$KERNEL_VERSION".tar.xz
+$GPG --verify linux-"$KERNEL_VERSION".tar.sign
+xz -cd "$KERNEL_VERSION".tar.xz | gpg2 --verify linux-"$KERNEL_VERSION".tar.sign -
+
+set -e
+zenity --question --title="SBKS Proceed?" --text="Please check your terminal if RSA keys are the same" --no-wrap --ok-label "Yes" --cancel-label "No"
+
+# Just in case...
+if [ "$EUID" -ne 0 ];then
+    echo "Please run this script as root"
+    exit 1
+fi
+# «κάλλιο γαϊδουρόδενε, παρά γαϊδουρογύρευε» <--Ancient Greek adage from my Grand, grand, grand ...father. The founder of "set -e" 3679 BC
+
+# create a direcory, put kernel tarbal there for the rest of the work
+mkdir -p kernel-"$KERNEL_VERSION"
+cp $PRGNAM-"$KERNEL_VERSION".tar kernel-"$KERNEL_VERSION"/
+cd kernel-"$KERNEL_VERSION"/
+echo "untar Linux-kernel "
+sleep 2
+tar -xf $PRGNAM-"$KERNEL_VERSION".tar
+echo "cd to Linux-kernel package"
+# My old .config I use has commended
+# CONFIG_SYSTEM_TRUSTED_KEYS
+# CONFIG_SYSTEM_TRUSTED_KEYRING
+sleep 2
+cd $PRGNAM-"$KERNEL_VERSION"/
+zcat /proc/config.gz > .config  
+make oldconfig
+# commend ^^ (make oldconfig) and uncommend next line if you want make menuconfig 
+# make menuconfig
+make "$JOBS"
+make modules_install
+# Put this here after modules installed but before we touch System.map and vmlizuz
+# so if something went wrong with modules mkinitrd wont find them, SBKS will stop before your system break.
+# If everything is ok SBKS will continue and at the right time will execute mkinitrd
+/usr/share/mkinitrd/mkinitrd_command_generator.sh -k "$VERSION2" > /boot/mymkinitrd.sh
+sleep 2
+filename="mymkinitrd.sh"
+Clear="mkinitrd -c"
+NOClear="mkinitrd"
+sed -i "s/$Clear/$NOClear/" /boot/$filename
+
+# fix vnlinuz and System.map. Some things are optional but just in case...not hurt.
+cp arch/x86_64/boot/bzImage /boot/vmlinuz-"$VERSION2"
+cp System.map /boot/System.map-"$VERSION2"
+
+cd /boot
+rm System.map
+ln -s System.map-"$VERSION2" System.map
+
+# now its the time, make a generic initrd
+sh $filename
+sleep 2
+
+# update-bootloader
+if [[ "$BOOTLOADER" == 7 ]] 
+then
+  grub-mkconfig -o /boot/grub/grub.cfg 
+elif
+  [[ "$BOOTLOADER" == 5 ]] 
+then
+  eliloconfig
+elif
+ [[ "$BOOTLOADER" == 0 ]] 
+then
+  lilo
+else
+ zenity --warning \
+--text="FAIL UPDATE Bootloader. Please Do it manually"
+fi
+
+if [[ "$BOOTLOADER" == 100 ]] 
+then
+  zenity --warning \
+--text="UPDATE Bootloader. Please Do it manually"
+fi
+
+sleep 2
+set +e
+
+zenity --warning \
+       --title "Warning Message" \
+       --width 500 \
+       --height 100 \
+       --text "Finaly you have  successfully break your system. Congrats"
+       
+if zenity --question --title="Do you want to reboot pc?" --text="Reboot?" --no-wrap
+    then
+     /sbin/reboot
+     zenity --info --title="Success" --text="System rebooting..." --no-wrap
+    else
+   zenity --info --text="OK! SBKS finish its job. Have a nice Slacky Day." --width=500 
+fi
+
