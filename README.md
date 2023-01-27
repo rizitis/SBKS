@@ -23,6 +23,8 @@ SBKS
 ```
 
 Everything else you will find it in the script at zenity dialogs.
+A 10 minutes video is here how to install and run SBKS
+
 
 ### Info
 SBKS wont remove or upgrade older Linux kernel versions that allready exist in your system.
