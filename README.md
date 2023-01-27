@@ -31,7 +31,7 @@ SBKS wont remove or upgrade older Linux kernel versions that allready exist in y
 6.1.8-rtz
 ```
 If for example the Kernel you want to build is 6.1.8...
-If you dont have custom kernel version then just write again on dialog box the kernel version you wise to build. 
+AND you dont have custom kernel version, or you are using officially Slackware Kenrel, then just write again on dialog box the kernel version you wise to build. 
 ```
 6.1.8
 ```
