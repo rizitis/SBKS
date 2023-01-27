@@ -23,7 +23,7 @@ SBKS
 ```
 
 Everything else you will find it in the script at zenity dialogs.
-A 10 minutes video is here how to install and run SBKS
+A 5 minutes video is here how to install and run SBKS
 
 [![SBKS](https://i9.ytimg.com/vi_webp/PfLugpULA-8/mq1.webp?sqp=CPCY0J4G-oaymwEmCMACELQB8quKqQMa8AEB-AH-CYAC0AWKAgwIABABGB0gZShkMA8=&rs=AOn4CLCcT3zY0IaCGRkYtx6NC6369UT6EA)](https://www.youtube.com/watch?v=PfLugpULA-8)
 
