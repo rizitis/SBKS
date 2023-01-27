@@ -38,7 +38,7 @@ AND you dont have custom kernel version, or you are using officially Slackware K
 ```
 
 With this script you can always have a second generic kernel that officially Slackware upgrade kernels will not touch it.
-We dont need it beacause Pat`s building are always fine, but just in case... 
+We dont need SBKS but only if we want a second or a third... kernel in our system. In other words, Slackware kernels are always fine, but just in case... 
 It is tested to Slackware64 15+ and Slackel
 
 ### NOTE: 
