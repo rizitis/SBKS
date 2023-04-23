@@ -30,6 +30,16 @@ if [ "$EUID" -ne 0 ];then
     exit 1
 fi
 
+if [ -x /usr/bin/zenity ];
+then 
+echo "zenity found"
+else 
+echo "************************************"
+echo "zenity not found. Plz install zenity"
+echo "************************************"
+exit 1
+fi
+
 
 # ADD Linux Kernel version you want to build here
 KERNEL_VERSION=$(zenity --entry \
