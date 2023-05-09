@@ -70,7 +70,7 @@ KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x  # dont change if we are
 PRGNAM=linux
 GPG=gpg2
 WGET=wget
-JOBS=" -j$(getconf _NPROCESSORS_ONLN) "}
+JOBS=-j$(getconf _NPROCESSORS_ONLN)
 
 
 
