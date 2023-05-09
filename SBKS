@@ -70,7 +70,9 @@ KERNEL_URL=https://cdn.kernel.org/pub/linux/kernel/v6.x  # dont change if we are
 PRGNAM=linux
 GPG=gpg2
 WGET=wget
-JOBS=-j$(nproc)
+JOBS=" -j$(getconf _NPROCESSORS_ONLN) "}
+
+
 
 cd /usr/src/
 # Check if BOTH kernel version AND signature file exist
