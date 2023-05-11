@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Slackware bash script named SBKS-1.0 (Slack-Build-Kernel-Script)
+# Slackware bash script named SBKS (Slack-Build-Kernel-Script)
 # For Slackware64 and Slackware based distros.
 # Anagnostakis Ioannis Greece 2022-2023 rizitis@gmail.com
 # REQUIRES="zenity"
