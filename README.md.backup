@@ -32,7 +32,7 @@ A 5 minutes video is here how to install and run SBKS
 
 
 ### Info
-SBKS wont remove or upgrade older Linux kernel versions that allready existed in your system.
+SBKS wont remove or upgrade older Linux kernel versions that allready exist in your system.
  In case your old .config is a custom kernel, for example if you are running now a kernel builded by you, named 6.0.14-rtz (uname -r will show you)
  Then on the VERSION2 dialog ONLY you should write:
 ```

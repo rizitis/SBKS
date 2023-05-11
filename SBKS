@@ -45,7 +45,7 @@ fi
 KERNEL_VERSION=$(zenity --entry \
        --width 500 \
        --title "Welcome to SBKS" \
-       --text "Enter here kernel version you want to build.Example: 6.1.8"); echo "$KERNEL_VERSION"
+       --text "Enter here kernel version you want to build.Example: 6.2.8"); echo "$KERNEL_VERSION"
        
 # If your oldconfig was builded by u and your old kernel`s name is taged by you asume: "6.0.13-tag" 
 # then add your TAG in VERSION2. Example VERSION2=6.0.14-TAG else script will fail using oldconfig.       
@@ -53,7 +53,7 @@ VERSION2=$(zenity --entry \
        --width 500 \
        --height 200 \
        --title "One more time please" \
-       --text "Enter kernel version again. If your current kernel version is 6.x.x-TAG then add it here. Example: 6.1.8-rtz"); echo "$VERSION2"
+       --text "Enter kernel version again. If your current kernel version is 6.x.x-TAG then add it here. Example: 6.2.8-rtz"); echo "$VERSION2"
 
 # script ask for current bootloader. 
 BOOTLOADER=$(zenity --entry \
@@ -130,7 +130,7 @@ Clear="mkinitrd -c"
 NOClear="mkinitrd"
 sed -i "s/$Clear/$NOClear/" /boot/$filename
 
-# fix vnlinuz and System.map. Some things are optional but just in case...not hurt.
+# fix vmlinuz and System.map. Some things are optional but just in case...not hurt.
 cp arch/x86_64/boot/bzImage /boot/vmlinuz-"$VERSION2"
 cp System.map /boot/System.map-"$VERSION2"
 
