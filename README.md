@@ -1,9 +1,11 @@
 # SBKS  
 ### (Slack-Build-Kernel-Script) 
-It use zenity dialogs, so zenity required (install it from SBo)
+It use yad dialogs, so yad required (install it from SBo)
 
 SBKS is a bash script for auto download, build, and install a second (backup) Linux kernel for Slackware and Slack based systems.
 Slackware Based Distros should execute this script as root ONLY, NOT sudo ./SBKS else  mkinitrd probably will fail and SBKS will stop.
+
+Past versions was using zenity, but I found yad more stable and better working in a Slackware system...
 
 ### Install 
 First install zenity from SlackBuild.org 
@@ -24,7 +26,7 @@ su -l or sudo -i
 SBKS 
 ```
 
-Everything else you will find it in the script at zenity dialogs.
+Everything else you will find it in the script at yad dialogs.
 A 5 minutes video is here how to install and run SBKS
 
 [![SBKS](https://github.com/rizitis/SBKS/raw/main/Screenshot%20from%202023-02-03%2017-16-55.png)](https://www.youtube.com/watch?v=PfLugpULA-8)
@@ -50,5 +52,5 @@ It is tested to Slackware64 15+ and Slackel
 
 ### NOTE: 
 This script its NOT working for testing kernels (for example 6.2-RC) 
-For testing kernels use SBKS-RC (zenity not needed for this)
+For testing kernels use SBKS-RC (yad not needed for this)
 (https://github.com/rizitis/SBKS/tree/SBKS-RC)
