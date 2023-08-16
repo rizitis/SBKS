@@ -3,7 +3,7 @@
 # Slackware bash script named SBKS (Slack-Build-Kernel-Script)
 # For Slackware64 and Slackware based distros.
 # Anagnostakis Ioannis Greece 2022-2023 rizitis@gmail.com
-# REQUIRES="zenity"
+# REQUIRES="yad"
 #
 # Redistribution and use of this script, with or without modification, is
 # permitted provided that the following conditions are met:
@@ -22,7 +22,7 @@
 #  ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 if [ "$EUID" -ne 0 ];then
-    zenity --error \
+    yad --error \
        --title "Error Message" \
        --width 500 \
        --height 100 \
@@ -30,39 +30,39 @@ if [ "$EUID" -ne 0 ];then
     exit 1
 fi
 
-if [ -x /usr/bin/zenity ];
+if [ -x /usr/bin/yad ];
 then 
-echo "zenity found"
+echo "yad found"
 else 
 echo "************************************"
-echo "zenity not found. Plz install zenity"
+echo "yad not found. Plz install yad"
 echo "************************************"
 exit 1
 fi
 
 
 # ADD Linux Kernel version you want to build here
-KERNEL_VERSION=$(zenity --entry \
+KERNEL_VERSION=$(yad --entry \
        --width 500 \
        --title "Welcome to SBKS" \
        --text "Enter here kernel version you want to build.Example: 6.2.8"); echo "$KERNEL_VERSION"
        
 # If your oldconfig was builded by u and your old kernel`s name is taged by you asume: "6.0.13-tag" 
 # then add your TAG in VERSION2. Example VERSION2=6.0.14-TAG else script will fail using oldconfig.       
-VERSION2=$(zenity --entry \
+VERSION2=$(yad --entry \
        --width 500 \
        --height 200 \
        --title "One more time please" \
        --text "Enter kernel version again. If your current kernel version is 6.x.x-TAG then add it here. Example: 6.2.8-rtz"); echo "$VERSION2"
 
 # script ask for current bootloader. 
-BOOTLOADER=$(zenity --entry \
+BOOTLOADER=$(yad --entry \
        --width 500 \
        --title "Bootloader in current system" \
        --text "Enter THE NUMBER of your bootloader.Example: Elilo=5 Lilo=0 Grub=7 myown=100"); echo "$BOOTLOADER"
        
 set -e
-zenity --question --title="SBKS Question?" --text="Check your inputs in terminal.Should we Proceed?" --no-wrap --ok-label "Yes" --cancel-label "No"
+yad --question --title="SBKS Question?" --text="Check your inputs in terminal.Should we Proceed?" --no-wrap --ok-label "Yes" --cancel-label "No"
 set +e
 
 # Normal wont need edit next lines exept if you want to use "make menuconfig or other make_config" 
@@ -79,7 +79,7 @@ cd /usr/src/
 $WGET -c --spider $KERNEL_URL/linux-"$KERNEL_VERSION".tar.{sign,xz}
 if [ $? ]
 then
- ($WGET -c $KERNEL_URL/linux-"$KERNEL_VERSION".tar.{xz,sign})| sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | zenity --progress --title="Downloading Files..." --percentage=1 --pulsate --time-remaining --auto-kill --auto-close \
+ ($WGET -c $KERNEL_URL/linux-"$KERNEL_VERSION".tar.{xz,sign})| sed -u 's/.* \([0-9]\+%\)\ \+\([0-9.]\+.\) \(.*\)/\1\n# Downloading at \2\/s, ETA \3/' | yad --progress --title="Downloading Files..." --percentage=1 --pulsate --time-remaining --auto-kill --auto-close \
  --width 800 \
  --height 50
 fi
@@ -92,7 +92,7 @@ $GPG --verify linux-"$KERNEL_VERSION".tar.sign
 xz -cd "$KERNEL_VERSION".tar.xz | gpg2 --verify linux-"$KERNEL_VERSION".tar.sign -
 
 set -e
-zenity --question --title="SBKS Proceed?" --text="Please check your terminal if RSA keys are the same" --no-wrap --ok-label "Yes" --cancel-label "No"
+yad --question --title="SBKS Proceed?" --text="Please check your terminal if RSA keys are the same" --no-wrap --ok-label "Yes" --cancel-label "No"
 
 # Just in case...
 if [ "$EUID" -ne 0 ];then
@@ -117,7 +117,7 @@ cd $PRGNAM-"$KERNEL_VERSION"/
 zcat /proc/config.gz > .config  
 make oldconfig
 # commend ^^ (make oldconfig) and uncommend next line if you want make menuconfig 
-# make menuconfig
+#make menuconfig
 make "$JOBS"
 make modules_install
 # Put this here after modules installed but before we touch System.map and vmlizuz
@@ -155,30 +155,30 @@ elif
 then
   lilo
 else
- zenity --warning \
+ yad --warning \
 --text="FAIL UPDATE Bootloader. Please Do it manually"
 fi
 
 if [[ "$BOOTLOADER" == 100 ]] 
 then
-  zenity --warning \
+  yad --warning \
 --text="UPDATE Bootloader. Please Do it manually"
 fi
 
 sleep 2
 set +e
 
-zenity --warning \
+yad --warning \
        --title "Warning Message" \
        --width 500 \
        --height 100 \
        --text "Finaly you have  successfully break your system. Congrats"
        
-if zenity --question --title="Do you want to reboot pc?" --text="Reboot?" --no-wrap
+if yad --question --title="Do you want to reboot pc?" --text="Reboot?" --no-wrap
     then
      /sbin/reboot
-     zenity --info --title="Success" --text="System rebooting..." --no-wrap
+     yad --info --title="Success" --text="System rebooting..." --no-wrap
     else
-   zenity --info --text="OK! SBKS finish its job. Have a nice Slacky Day." --width=500 
+   yad --info --text="OK! SBKS finish its job. Have a nice Slacky Day." --width=500 
 fi
 
